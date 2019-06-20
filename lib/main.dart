@@ -15,6 +15,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Startup Name Generator',
       home: RandomWords(),
+      theme: ThemeData(
+        primaryColor: Colors.red,
+      ),
     );
   }
   // #enddocregion build
@@ -54,10 +57,18 @@ class RandomWordsState extends State<RandomWords> {
         style: _biggerFont,
       ),
       trailing: Icon(
-        // Add the lines from here...
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
-      ), // ... to here.
+      ),
+      onTap: () {
+        setState(() {
+          if (alreadySaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
+          }
+        });
+      },
     );
   }
   // #enddocregion _buildRow
@@ -68,12 +79,48 @@ class RandomWordsState extends State<RandomWords> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
+        actions: <Widget>[
+          // Add 3 lines from here...
+          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+        ], // ... to here.
       ),
       body: _buildSuggestions(),
     );
   }
+
+  void _pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        // Add 20 lines from here...
+        builder: (BuildContext context) {
+          final Iterable<ListTile> tiles = _saved.map(
+            (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          final List<Widget> divided = ListTile.divideTiles(
+            context: context,
+            tiles: tiles,
+          ).toList();
+          return Scaffold(
+            // Add 6 lines from here...
+            appBar: AppBar(
+              title: Text('Saved Suggestions'),
+            ),
+            body: ListView(children: divided),
+          ); // ... to here.
+        },
+      ), // ... to here.
+    );
+  }
   // #enddocregion RWS-build
   // #docregion RWS-var
+
 }
 // #enddocregion RWS-var
 
